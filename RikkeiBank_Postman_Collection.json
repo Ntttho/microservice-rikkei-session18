@@ -1,0 +1,590 @@
+{
+  "info": {
+    "_postman_id": "809829fe-e4a1-4889-af3e-9a2a965b5f5b",
+    "name": "RikkeiBank Microservices API",
+    "description": "Collection of API Endpoints for RikkeiBank Digital Banking Microservices through Spring Cloud Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tellerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Identity Service (Auth & Security)",
+      "item": [
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('adminToken', jsonData.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@rikkeibank.com\",\n  \"password\": \"Admin@123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login as Teller",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('tellerToken', jsonData.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teller@rikkeibank.com\",\n  \"password\": \"Teller@123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login as Customer 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.accessToken) {",
+                  "    pm.collectionVariables.set('customerToken', jsonData.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@rikkeibank.com\",\n  \"password\": \"Customer@123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register New Customer Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@rikkeibank.com\",\n  \"password\": \"NewUser@123456\",\n  \"fullName\": \"Le Van C\",\n  \"phoneNumber\": \"0944444444\",\n  \"roles\": [\"CUSTOMER\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"<PUT_REFRESH_TOKEN_HERE>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Admin: Force Revoke User Tokens (Force Logout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetEmail\": \"customer1@rikkeibank.com\",\n  \"reason\": \"Suspicious login detected by security team\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/revoke",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "revoke"]
+            }
+          }
+        },
+        {
+          "name": "Admin: Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Customer & Catalog Service",
+      "item": [
+        {
+          "name": "Get All Customers (Cached in Redis)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Get Customer By ID (Redis Cache-Aside)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customers", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create New Customer Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerCode\": \"CUST-0003\",\n  \"fullName\": \"Pham Hoang D\",\n  \"email\": \"customer3@rikkeibank.com\",\n  \"phoneNumber\": \"0933333333\",\n  \"identityCardNumber\": \"001200009999\",\n  \"address\": \"Da Nang City\",\n  \"dateOfBirth\": \"1992-08-10\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Get All Account Types (Catalog)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/account-types",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "account-types"]
+            }
+          }
+        },
+        {
+          "name": "Create Account Type (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BUSINESS\",\n  \"name\": \"Corporate Business Account\",\n  \"description\": \"For SME and Corporate banking\",\n  \"interestRate\": 0.02,\n  \"minimumBalance\": 10000000,\n  \"dailyTransferLimit\": 20000000000,\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/account-types",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "account-types"]
+            }
+          }
+        },
+        {
+          "name": "Get All Staffs (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Account Service",
+      "item": [
+        {
+          "name": "Get My Accounts (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accounts/my-accounts?email=customer1@rikkeibank.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "accounts", "my-accounts"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "customer1@rikkeibank.com"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Account by Number (Redis Cached)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accounts/number/1000188888",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "accounts", "number", "1000188888"]
+            }
+          }
+        },
+        {
+          "name": "Deposit Money (Top-up)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 5000000,\n  \"description\": \"Top up balance from salary\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accounts/1000188888/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "accounts", "1000188888", "deposit"]
+            }
+          }
+        },
+        {
+          "name": "Withdraw Money",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1000000,\n  \"description\": \"ATM Cash Withdrawal\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accounts/1000188888/withdraw",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "accounts", "1000188888", "withdraw"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Transaction Service (Core Saga Transfer)",
+      "item": [
+        {
+          "name": "Transfer Funds (Saga Happy Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceAccountNumber\": \"1000188888\",\n  \"targetAccountNumber\": \"1000288888\",\n  \"amount\": 2000000,\n  \"description\": \"Payment for laptop purchase\",\n  \"simulateReceiverCreditFailure\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Funds (Saga Compensating Rollback Demo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceAccountNumber\": \"1000188888\",\n  \"targetAccountNumber\": \"1000288888\",\n  \"amount\": 1500000,\n  \"description\": \"Test Saga Compensating Failure Flow\",\n  \"simulateReceiverCreditFailure\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transactions", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "Get Customer Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/my-history?email=customer1@rikkeibank.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transactions", "my-history"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "customer1@rikkeibank.com"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Teller: View Daily Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transactions/admin/daily",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transactions", "admin", "daily"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Notification Service (Kafka Consumer & WebFlux)",
+      "item": [
+        {
+          "name": "Get User Notifications (Event-driven from Kafka)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/my-notifications?email=customer1@rikkeibank.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications", "my-notifications"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "customer1@rikkeibank.com"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stream Notifications SSE (Reactive WebFlux)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/stream?email=customer1@rikkeibank.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications", "stream"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "customer1@rikkeibank.com"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
